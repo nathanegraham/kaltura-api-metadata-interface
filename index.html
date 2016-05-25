@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Upload Custom Data for Kaltura</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+	<style>
+		.loader {    
+			-moz-border-bottom-colors: none;
+			-moz-border-left-colors: none;
+			-moz-border-right-colors: none;
+			-moz-border-top-colors: none;
+			animation: 2s linear 0s normal none infinite running spin;
+			border-color: #3498db #f3f3f3 #f3f3f3;
+			border-image: none;
+			border-radius: 59%;
+			border-style: solid;
+			border-width: 4px;
+			float: left;
+			height: 30px;
+			margin: 5px 10px;
+			width: 30px;
+		}
+
+		@keyframes spin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+	</style>
+
+	</head>
+  <body>
+	<div class="container">
+		<div class="form">
+			<form onsubmit="formSubmit(1);return false;" id="form">
+				<h1 class="text-center">Entry Additional Info</h1>
+				<fieldset class="form-group">
+					<label for="exampleInputEmail1">Category Id</label>
+					<input type="text" class="form-control" name="category" placeholder="Example: Samples>Sample Videos">
+					<small class="text-muted">Enter Category ID for update.</small>
+				</fieldset>  
+				<fieldset class="form-group">
+					<label for="exampleInputEmail1">Values</label>
+					<input type="text" class="form-control" name="values" placeholder="Enter values">
+					<small class="text-muted">Enter Values For Entries.</small>
+				</fieldset>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+		</div>
+		<div class="bar hide">
+			<h1>Progress <span class="number"></span>/<span class="full"></span> <div class="loader hide"></div><span class="finish"></span></h1>
+			<div class="progress">
+				<div class="progress-bar" role="progressbar" aria-valuenow="10"
+				aria-valuemin="0" aria-valuemax="100" style="width:0%">
+					<span class="sr-only">70% Complete</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		function formSubmit(page){
+			var msg   = jQuery('#form').serialize();
+			jQuery('.form').addClass('hide');	
+			jQuery('.bar').removeClass('hide');
+			jQuery('.loader').removeClass('hide');
+			jQuery.ajax({
+			  type: 'POST',
+			  url: 'post.php?page=' + page,
+			  data: msg,
+			  success: function(data) { 	
+					var count = parseInt(data);
+					if(page*5 > count){
+						jQuery('.number').html(count);
+					} else {
+						jQuery('.number').html(page*5);
+					}					
+					jQuery('.full').html(data);
+					jQuery('.progress-bar').css('width',parseFloat(page*5)*100/parseFloat(data) + '%');
+					if(count>5 && (page*5)<count){
+						var nextPage = page + 1;
+						formSubmit(nextPage);
+					}else{						
+						jQuery('.loader').addClass('hide');
+						jQuery('.finish').html('Finished');
+					}
+			  },
+			  error:  function(xhr, str){
+				}
+			});
+		};
+	</script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+   </body>
+</html>
